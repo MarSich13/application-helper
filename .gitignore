@@ -1,0 +1,13 @@
+# IDE settings
+.idea/
+*.iml
+
+# Build output and installed dependencies
+target/
+node_modules/
+dist/
+
+# Local environment configuration
+.env
+.env.*
+!.env.example
