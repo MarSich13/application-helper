@@ -2,6 +2,9 @@
 .idea/
 *.iml
 
+# Local learning material
+/docs/
+
 # Build output and installed dependencies
 target/
 node_modules/
