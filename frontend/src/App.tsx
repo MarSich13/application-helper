@@ -4,17 +4,23 @@ import VacancyCard from './components/VacancyCard'
 
 function App() {
 
-  const firstVacancy: Vacancy = {
-    id: 1,
-    title: 'Java Developer',
-    company: 'CyberCube'
-  }
-
-  const secondVacancy: Vacancy = {
-    id: 2,
-    title: 'Python Developer',
-    company: 'Demo Company'
-  }
+  const vacancies: Vacancy[] = [
+    {
+      id: 1,
+      title: 'Java Developer',
+      company: 'CyberCube'
+    },
+    {
+      id: 2,
+      title: 'Python Developer',
+      company: 'Demo Company'
+    },
+    {
+      id: 3,
+      title: 'Frontend Developer',
+      company: 'Wise'
+    }
+  ]
 
   return (
     <main>
@@ -24,10 +30,14 @@ function App() {
         <h2>Vacancies</h2>
       
 
-        <article>
-          <VacancyCard vacancy={firstVacancy} />
-          <VacancyCard vacancy={secondVacancy} />
-        </article>
+        
+        {vacancies.map((vacancy) => (
+          <VacancyCard
+          key={vacancy.id}
+          vacancy={vacancy}
+          />
+        ))}
+        
       </section>
     </main>
   )
