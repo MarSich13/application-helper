@@ -17,6 +17,7 @@ A job-search CRM for keeping opportunities, application progress, and interview 
 - Dashboard showing active applications, interview-stage roles, offers and activity over the last seven days.
 - Registration, sign-in and sign-out through CSRF-protected cookie sessions.
 - JSON imports that update metadata without duplicating vacancies or overwriting personal progress.
+- Optional LinkedIn MCP collector with a local search profile, durable delivery queue and automatic CRM imports.
 - Responsive desktop/mobile interface, keyboard-friendly native dialogs, loading states, empty states and actionable error messages.
 
 ## Quick start
@@ -68,6 +69,8 @@ The app binds to loopback by default. Internet hosting is separate from publishi
 The imported vacancy is identified by `(source, externalId)`. A whole batch commits or rolls back together.
 
 ## Run from source
+
+For automatic vacancy collection, see [the LinkedIn MCP collector](collector/README.md). It runs alongside the CRM and uses the same import API; its credentials and collected data stay outside Git. Daily scheduling is configured separately in Codex.
 
 Requirements: **JDK 25**, **Node.js 24**, npm, Docker for PostgreSQL and backend integration tests.
 
@@ -137,6 +140,7 @@ backend/             Spring Boot API, business rules, migrations, integration te
 frontend/src/        React pages, shared components, typed API client
 frontend/e2e/        Playwright browser workflows
 frontend/public/     Downloadable import examples and favicon
+collector/           Public LinkedIn MCP searches, normalization and reliable API delivery
 compose.yaml         PostgreSQL, API, Nginx/client
 ARCHITECTURE.md       Schema, transactions, ownership and trade-offs
 .github/workflows/   Automated checks
@@ -181,4 +185,4 @@ Search parameters: `q`, `technology`, `location`, `workMode`, `experience`, `sta
 
 ## Scope
 
-This version is a complete local job-search CRM. It imports JSON exported by a collector; it does not scrape sites itself. Email verification, password reset, reminders, external calendar integration and hosted production deployment are future extensions.
+This version is a complete local job-search CRM with an optional public LinkedIn MCP collector. The Spring Boot application imports JSON through its API; scheduling and external searches run separately in Codex and the collector. Email verification, password reset, personal reminders, external calendar integration and hosted production deployment are future extensions.

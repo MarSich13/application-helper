@@ -104,7 +104,9 @@ Search filters live in the URL. Pagination and filtering happen in PostgreSQL th
 
 ## Deliberate limits
 
-- Import accepts JSON from a collector; it does not scrape third-party websites or run scheduled jobs.
+- The optional Node collector searches through a pinned public LinkedIn MCP server, normalizes results and delivers durable batches to the existing session/CSRF-protected import API. A dedicated local account owns the collector session; it has normal catalogue permissions and does not access other users' applications.
+- Codex owns the daily local schedule. Runtime snapshots, pending batches, acknowledgements and collector credentials stay outside Git. The backend does not run a scheduler or scrape third-party websites.
+- The collector checks a bounded sample with a seven-day lookback. It cannot guarantee complete market coverage or flawless metadata. Uncertain work arrangements and conflicting source fields remain visible in the descriptions and local reports.
 - Deduplication uses the documented source/external ID pair, not title similarity or cross-source URL matching.
 - Email verification, password reset, notifications, and distributed sessions are outside this version.
 - Dashboard aggregation loads the current user's application records. This is suitable for a personal job search; a larger deployment can move it to grouped database queries.
