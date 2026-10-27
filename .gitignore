@@ -14,3 +14,9 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Browser tests and local tooling
+playwright-report/
+test-results/
+.tools/
+*.log
