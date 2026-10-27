@@ -1,0 +1,37 @@
+{
+  "source": "portfolio-demo",
+  "vacancies": [
+    {
+      "externalId": "java-001",
+      "title": "Java Developer",
+      "company": "Example Studio",
+      "location": "Remote, Europe",
+      "workMode": "REMOTE",
+      "experience": "Junior",
+      "salary": "€38,000 – €55,000",
+      "description": "Updated description: build Java APIs, design reliable imports, and work with PostgreSQL. Your existing application status and notes must survive this import.",
+      "sourceUrl": "https://example.com/jobs/java-001",
+      "technologies": [
+        "java",
+        "spring boot",
+        "postgresql"
+      ]
+    },
+    {
+      "externalId": "react-002",
+      "title": "React Developer",
+      "company": "Example Studio",
+      "location": "Kyiv, Ukraine",
+      "workMode": "HYBRID",
+      "experience": "Middle",
+      "salary": "€40,000 – €60,000",
+      "description": "Build accessible web interfaces with React and TypeScript. This is fictional demonstration data.",
+      "sourceUrl": "https://example.com/jobs/react-002",
+      "technologies": [
+        "react",
+        "typescript",
+        "css"
+      ]
+    }
+  ]
+}

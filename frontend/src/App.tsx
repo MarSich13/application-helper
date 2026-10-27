@@ -1,58 +1,31 @@
+import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
+import { AuthProvider } from './auth/AuthContext'
+import { useAuth } from './auth/useAuth'
+import Layout from './components/Layout'
+import { Loading, EmptyState } from './components/ui'
+import AuthPage from './pages/AuthPage'
+import DashboardPage from './pages/DashboardPage'
+import VacanciesPage from './pages/VacanciesPage'
+import VacancyDetailPage from './pages/VacancyDetailPage'
+import ImportPage from './pages/ImportPage'
 import './App.css'
-import { useState } from 'react'
-import type { Vacancy } from './types/vacancy'
-import VacancyCard from './components/VacancyCard'
 
-function App() {
-
-  const initialVacancies: Vacancy[] = [
-    {
-      id: 1,
-      title: 'Java Developer',
-      company: 'CyberCube'
-    },
-    {
-      id: 2,
-      title: 'Python Developer',
-      company: 'Demo Company'
-    },
-    {
-      id: 3,
-      title: 'Frontend Developer',
-      company: 'Wise'
-    }
-  ]
-
-  const [vacancies, setVacancies] = useState<Vacancy[]>(initialVacancies)
-
-  function clearVacancies(){
-    setVacancies([])
-  }
-
-
-  return (
-    <main>
-      <h1>Application Helper</h1>
-
-      <section>
-        <h2>Vacancies</h2>
-
-        <button type="button" onClick={() => clearVacancies()}>
-          Clear list
-        </button>
-
-        {vacancies.length === 0 && <p>No vacancies found</p>}
-        
-        {vacancies.map((vacancy) => (
-          <VacancyCard
-          key={vacancy.id}
-          vacancy={vacancy}
-          />
-        ))}
-        
-      </section>
-    </main>
-  )
+function AppRoutes() {
+  const { user, loading } = useAuth()
+  if (loading) return <div className="full-screen"><Loading label="Opening your workspace…" /></div>
+  return <Routes>
+    <Route path="/login" element={<AuthPage />} />
+    <Route path="/register" element={<AuthPage register />} />
+    <Route element={user ? <Layout /> : <Navigate to="/login" replace />}>
+      <Route index element={<DashboardPage />} />
+      <Route path="/vacancies" element={<VacanciesPage />} />
+      <Route path="/applications" element={<VacanciesPage tracked />} />
+      <Route path="/vacancies/:id" element={<VacancyDetailPage />} />
+      <Route path="/import" element={<ImportPage />} />
+      <Route path="*" element={<EmptyState title="A little off track" description="This page could not be found. Let's get you back to your workspace." action={<Link className="button primary" to="/">Back to overview</Link>} />} />
+    </Route>
+  </Routes>
 }
-
-export default App
+export default function App() {
+  return <BrowserRouter><AuthProvider><AppRoutes /></AuthProvider></BrowserRouter>
+}
