@@ -53,8 +53,11 @@ export function normalize(job, acceptedLanguages) {
   if (/volunteer/i.test(job.employmentType ?? '')) warnings.push('Public employment metadata says Volunteer; verify with employer');
   if (workplace(description, job.workplaceType) === 'UNSPECIFIED') warnings.push('Working arrangement unknown or multiple options; see description');
   const suppliedSeniority = job.seniorityLevel && !/not applicable/i.test(job.seniorityLevel) ? job.seniorityLevel : job.experienceLevel ?? '';
-  const seniority = /\bjunior\b/i.test(title) || /^entry[- ]level$/i.test(suppliedSeniority) ? 'Junior'
-    : suppliedSeniority || (/\bsenior\b/i.test(title) ? 'Senior' : /\b(?:mid[- ]level|middle)\b/i.test(title) ? 'Middle' : '');
+  const titleLevel = /\bjunior\b/i.test(title) ? 'Junior' : /\b(?:mid[- ]level|middle)\b/i.test(title) ? 'Middle' : /\bsenior\b/i.test(title) ? 'Senior' : '';
+  const sourceLevel = /^entry[- ]level$/i.test(suppliedSeniority) ? 'Junior' : suppliedSeniority;
+  const conflictingLevel = titleLevel && sourceLevel && !sourceLevel.toLowerCase().includes(titleLevel.toLowerCase());
+  const seniority = conflictingLevel ? titleLevel : sourceLevel || titleLevel;
+  if (conflictingLevel) warnings.push(`Conflicting seniority metadata (${suppliedSeniority}); explicit title level retained`);
   // Only inspect the requirements section: company age is not required experience.
   const requirements = description.search(/qualifications|who are we looking for|to thrive in this role|what we are looking for|required|requirements|see töö sobib/i);
   const years = requirements < 0 ? undefined : description.slice(requirements).match(/(?:at least\s+)?\d+(?:\s*[–-]\s*\d+)?\+?\s+years?\b|vähemalt\s+\d+\s+aastat/i)?.[0];

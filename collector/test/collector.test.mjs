@@ -46,6 +46,9 @@ test('requirements extraction ignores company history and retains seniority with
 test('junior roles remain discoverable by the CRM experience filter when LinkedIn seniority is missing', () => {
   assert.equal(normalize(vacancy({ title: 'Junior Software Developer at CODE Tribe', seniorityLevel: 'Not Applicable' })).item.experience, 'Junior');
   assert.equal(normalize(vacancy({ title: 'QA Engineer', seniorityLevel: 'Entry level' })).item.experience, 'Junior');
+  const conflict = normalize(vacancy({ title: 'Data Platform Engineer (Mid-level)', seniorityLevel: 'Entry level' }));
+  assert.equal(conflict.item.experience, 'Middle');
+  assert.ok(conflict.warnings.some(message => message.includes('Conflicting seniority')));
 });
 
 test('malformed, incomplete, and explicitly closed postings are rejected', () => {
