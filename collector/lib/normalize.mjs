@@ -52,7 +52,9 @@ export function normalize(job, acceptedLanguages) {
   if (description.length > 30000) warnings.push('Description truncated to API limit; full text is in raw.json');
   if (/volunteer/i.test(job.employmentType ?? '')) warnings.push('Public employment metadata says Volunteer; verify with employer');
   if (workplace(description, job.workplaceType) === 'UNSPECIFIED') warnings.push('Working arrangement unknown or multiple options; see description');
-  const seniority = job.seniorityLevel && !/not applicable/i.test(job.seniorityLevel) ? job.seniorityLevel : job.experienceLevel ?? '';
+  const suppliedSeniority = job.seniorityLevel && !/not applicable/i.test(job.seniorityLevel) ? job.seniorityLevel : job.experienceLevel ?? '';
+  const seniority = /\bjunior\b/i.test(title) || /^entry[- ]level$/i.test(suppliedSeniority) ? 'Junior'
+    : suppliedSeniority || (/\bsenior\b/i.test(title) ? 'Senior' : /\b(?:mid[- ]level|middle)\b/i.test(title) ? 'Middle' : '');
   // Only inspect the requirements section: company age is not required experience.
   const requirements = description.search(/qualifications|who are we looking for|to thrive in this role|what we are looking for|required|requirements|see töö sobib/i);
   const years = requirements < 0 ? undefined : description.slice(requirements).match(/(?:at least\s+)?\d+(?:\s*[–-]\s*\d+)?\+?\s+years?\b|vähemalt\s+\d+\s+aastat/i)?.[0];

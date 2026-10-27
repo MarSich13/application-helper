@@ -43,6 +43,11 @@ test('requirements extraction ignores company history and retains seniority with
   assert.equal(normalize(vacancy({ description: 'Who Are We Looking ForAt least 2 years of professional experience. Java.' })).item.experience, 'At least 2 years');
 });
 
+test('junior roles remain discoverable by the CRM experience filter when LinkedIn seniority is missing', () => {
+  assert.equal(normalize(vacancy({ title: 'Junior Software Developer at CODE Tribe', seniorityLevel: 'Not Applicable' })).item.experience, 'Junior');
+  assert.equal(normalize(vacancy({ title: 'QA Engineer', seniorityLevel: 'Entry level' })).item.experience, 'Junior');
+});
+
 test('malformed, incomplete, and explicitly closed postings are rejected', () => {
   assert.throws(() => normalize(vacancy({ id: '../../file' })), /invalid LinkedIn/);
   assert.throws(() => normalize(vacancy({ description: '' })), /Incomplete/);
