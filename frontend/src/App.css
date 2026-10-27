@@ -109,7 +109,7 @@
 .momentum-panel p { font-size: 12px; line-height: 1.8; color: #666f57; max-width: 245px; margin-bottom: 20px; }
 .momentum-panel p strong { color: #5f7249; font-weight: 600; }
 .momentum-panel .button { font-size: 12px; min-height: 35px; position: relative; z-index: 1; }
-.momentum-decoration { position: absolute; bottom: -80px; right: -30px; font-size: 260px; line-height: 1; color: #696e61; font-weight: 300; transform: rotate(-5deg); pointer-events: none; }
+.momentum-decoration { position: absolute; bottom: -80px; right: -30px; font-size: 260px; line-height: 1; color: #dbe5cb; font-weight: 300; transform: rotate(-5deg); pointer-events: none; }
 .recent-section .section-heading { margin-bottom: 21px; }
 .quick-actions { margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--border); border-radius: 10px; background: #fafbf7; }
 .quick-actions > div { display: flex; align-items: center; gap: 12px; padding: 21px; }
