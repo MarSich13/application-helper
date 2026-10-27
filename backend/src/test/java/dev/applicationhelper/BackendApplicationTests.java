@@ -144,6 +144,67 @@ class BackendApplicationTests {
         assertThat(body(request(client, "GET", "/api/applications/" + ids.iterator().next(), null)).get("history").size()).isEqualTo(1);
     }
 
+
+    Map<String, Object> importPayload(String source, String description) {
+        Map<String, Object> item = new HashMap<>(vacancyInput("Imported Java Developer"));
+        item.put("externalId", "external-42"); item.put("description", description);
+        return Map.of("source", source, "vacancies", List.of(item));
+    }
+
+    @Test void repeatedImportsUpdateMetadataAndKeepPrivateStatusNotesAndHistory() throws Exception {
+        HttpClient client = account();
+        String source = "import-" + UUID.randomUUID();
+        JsonNode first = body(request(client, "POST", "/api/imports", importPayload(source, "Original description")));
+        assertThat(first.get("created").asInt()).isEqualTo(1);
+        long vacancyId = first.get("vacancyIds").get(0).asLong();
+        JsonNode tracked = body(request(client, "PUT", "/api/vacancies/" + vacancyId + "/application", null));
+        long applicationId = tracked.get("id").asLong();
+        JsonNode applied = body(request(client, "PUT", "/api/applications/" + applicationId + "/status",
+            Map.of("status", "APPLIED", "version", 0)));
+        request(client, "PUT", "/api/applications/" + applicationId + "/notes",
+            Map.of("notes", "Keep my notes", "version", applied.get("version").asLong()));
+        JsonNode second = body(request(client, "POST", "/api/imports", importPayload(source, "Updated description")));
+        assertThat(second.get("created").asInt()).isZero();
+        assertThat(second.get("updated").asInt()).isEqualTo(1);
+        assertThat(second.get("vacancyIds").get(0).asLong()).isEqualTo(vacancyId);
+        JsonNode detail = body(request(client, "GET", "/api/vacancies/" + vacancyId, null));
+        assertThat(detail.get("vacancy").get("description").asText()).isEqualTo("Updated description");
+        assertThat(detail.get("application").get("notes").asText()).isEqualTo("Keep my notes");
+        assertThat(detail.get("application").get("status").asText()).isEqualTo("APPLIED");
+        assertThat(detail.get("application").get("history").size()).isEqualTo(2);
+    }
+
+    @Test void concurrentImportsOfTheSameSourceDoNotCreateDuplicates() throws Exception {
+        HttpClient client = account();
+        String source = "race-" + UUID.randomUUID();
+        var futures = java.util.stream.IntStream.range(0, 3).mapToObj(index -> CompletableFuture.supplyAsync(() -> {
+            try { return request(client, "POST", "/api/imports", importPayload(source, "Concurrent import")); }
+            catch (Exception exception) { throw new RuntimeException(exception); }
+        })).toList();
+        Set<Long> ids = new HashSet<>();
+        int created = 0;
+        for (var future : futures) {
+            var response = future.join();
+            assertThat(response.statusCode()).isEqualTo(200);
+            JsonNode result = body(response);
+            ids.add(result.get("vacancyIds").get(0).asLong()); created += result.get("created").asInt();
+        }
+        assertThat(ids).hasSize(1);
+        assertThat(created).isEqualTo(1);
+    }
+
+    @Test void aFailedImportRollsBackEarlierItemsInTheSameBatch() throws Exception {
+        HttpClient client = account();
+        String source = "atomic-" + UUID.randomUUID();
+        Map<String, Object> valid = new HashMap<>(vacancyInput("Atomic " + source));
+        valid.put("externalId", "valid");
+        Map<String, Object> invalid = new HashMap<>(vacancyInput("Invalid URL"));
+        invalid.put("externalId", "invalid"); invalid.put("sourceUrl", "file:///private");
+        assertThat(request(client, "POST", "/api/imports", Map.of("source", source, "vacancies", List.of(valid, invalid))).statusCode()).isEqualTo(400);
+        JsonNode retry = body(request(client, "POST", "/api/imports", Map.of("source", source, "vacancies", List.of(valid))));
+        assertThat(retry.get("created").asInt()).isEqualTo(1);
+    }
+
     @Test void searchesAreFilteredAndPaginatedAndInvalidInputIsRejected() throws Exception {
         HttpClient client = account();
         String title = "Unique-" + UUID.randomUUID();
