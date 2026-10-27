@@ -92,6 +92,8 @@ The API includes allowed transitions in each application detail. The client offe
 
 Spring Security manages BCrypt hashes and HttpOnly session cookies. Unsafe requests, registration, login, and logout require the session-backed CSRF token returned by `GET /api/auth/csrf`. The browser requests a fresh masked token before each mutation, which also handles token rotation after authentication.
 
+The login success handler initializes the rotated CSRF token before returning. This avoids a race in which parallel first requests generate different session tokens and reject one another before reaching the import transaction.
+
 No credentials or bearer tokens are stored in localStorage. Sessions are kept in the backend process: restarting it signs users out, while database records remain. HTTPS hosting should set `SESSION_COOKIE_SECURE=true`.
 
 ## Client behavior
