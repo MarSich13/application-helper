@@ -30,6 +30,7 @@ export default function ImportPage() {
   }
   async function submit() {
     setError(''); setResult(null)
+    if (new TextEncoder().encode(text).byteLength > 2 * 1024 * 1024) { setError('Use JSON smaller than 2 MB.'); return }
     let payload: unknown
     try {
       payload = JSON.parse(text)

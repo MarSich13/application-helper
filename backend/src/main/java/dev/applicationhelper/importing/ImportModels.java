@@ -7,7 +7,7 @@ import java.util.List;
 public final class ImportModels {
     private ImportModels() {}
     public record ImportRequest(@NotBlank @Pattern(regexp="[a-z0-9][a-z0-9._-]{1,59}") String source,
-        @NotNull @Size(min=1,max=500) List<@Valid ImportItem> vacancies) {}
+        @NotNull @Size(min=1,max=500) List<@NotNull @Valid ImportItem> vacancies) {}
     public record ImportItem(@NotBlank @Size(max=200) String externalId,
         @NotBlank @Size(max=200) String title, @NotBlank @Size(max=200) String company,
         @Size(max=200) String location, @NotNull WorkMode workMode,

@@ -25,7 +25,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   if (!response.ok) {
     const problem = await response.json().catch(() => ({}))
     if (response.status === 401 && !path.startsWith('/auth/')) window.dispatchEvent(new Event('session-expired'))
-    throw new ApiError(problem.detail ?? (response.status === 404 ? 'This page could not be found.' : 'Something went wrong. Please try again.'),
+    throw new ApiError(problem.detail ?? (response.status === 413 ? 'This file is too large. Use JSON smaller than 2 MB.' : response.status === 404 ? 'This page could not be found.' : 'Something went wrong. Please try again.'),
       response.status, problem.fields ?? {})
   }
   return response.status === 204 ? undefined as T : response.json()

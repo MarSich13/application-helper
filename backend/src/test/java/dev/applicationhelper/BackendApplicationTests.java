@@ -205,6 +205,32 @@ class BackendApplicationTests {
         assertThat(retry.get("created").asInt()).isEqualTo(1);
     }
 
+
+    @Test void concurrentDifferentStatusUpdatesDoNotLoseHistoryOrOverwriteNewerState() throws Exception {
+        HttpClient client = account();
+        long vacancyId = vacancy(client);
+        long id = body(request(client, "PUT", "/api/vacancies/" + vacancyId + "/application", null)).get("id").asLong();
+        var futures = List.of("APPLIED", "WITHDRAWN").stream().map(status -> CompletableFuture.supplyAsync(() -> {
+            try { return request(client, "PUT", "/api/applications/" + id + "/status", Map.of("status", status, "version", 0)); }
+            catch (Exception exception) { throw new RuntimeException(exception); }
+        })).toList();
+        List<Integer> statuses = futures.stream().map(future -> future.join().statusCode()).sorted().toList();
+        assertThat(statuses).containsExactly(200, 409);
+        JsonNode current = body(request(client, "GET", "/api/applications/" + id, null));
+        assertThat(current.get("history").size()).isEqualTo(2);
+        assertThat(current.get("version").asLong()).isEqualTo(1);
+    }
+
+    @Test void nullAndDuplicateImportItemsAreValidationErrors() throws Exception {
+        HttpClient client = account();
+        assertThat(request(client, "POST", "/api/imports", Map.of("source", "null-example",
+            "vacancies", Arrays.asList((Object) null))).statusCode()).isEqualTo(400);
+        Map<String, Object> item = new HashMap<>(vacancyInput("Duplicate"));
+        item.put("externalId", "same-id");
+        assertThat(request(client, "POST", "/api/imports", Map.of("source", "duplicate-example",
+            "vacancies", List.of(item, item))).statusCode()).isEqualTo(400);
+    }
+
     @Test void searchesAreFilteredAndPaginatedAndInvalidInputIsRejected() throws Exception {
         HttpClient client = account();
         String title = "Unique-" + UUID.randomUUID();

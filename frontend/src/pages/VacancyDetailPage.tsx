@@ -56,7 +56,7 @@ function VacancyDetailContent({ initial }: { initial: VacancyDetail }) {
         <div className="source-footer"><Clock3 size={14} /><span>Added {formatDate(vacancy.createdAt)} · Updated {formatDate(vacancy.updatedAt)}</span><span className="source-tag">{vacancy.source}</span></div>
       </section>
       {application && <section className="panel notes-panel"><div className="section-heading"><div><h2>Notes to your future self</h2><p>The details you’ll be glad you remembered.</p></div><LockKeyhole size={17} className="muted" /></div>
-        <label htmlFor="application-notes" className="sr-only">Private notes</label><textarea id="application-notes" value={notes} onChange={event => { setNotes(event.target.value); setNotice('') }} maxLength={10000} rows={8} placeholder="Recruiter details, interview prep, questions to ask…" />
+        <label htmlFor="application-notes" className="sr-only">Private notes</label><textarea id="application-notes" value={notes} disabled={busy} onChange={event => { setNotes(event.target.value); setNotice('') }} maxLength={10000} rows={8} placeholder="Recruiter details, interview prep, questions to ask…" />
         <div className="notes-footer"><small>{notes.length.toLocaleString()} / 10,000 · Only visible to you</small><button className="button primary" onClick={saveNotes} disabled={busy || notes === application.notes}>{busy ? <LoaderCircle className="spin" size={16} /> : <Save size={16} />}Save notes</button></div></section>}
     </div><aside className="detail-aside">
       <section className="panel progress-panel"><span className="eyebrow">YOUR NEXT STEP</span><h2>Your application</h2>
