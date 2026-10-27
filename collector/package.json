@@ -1,0 +1,17 @@
+{
+  "name": "application-helper-collector",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "setup": "node run.mjs setup",
+    "collect": "node run.mjs collect",
+    "retry": "node run.mjs retry",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "linkedin-mcp-search": "1.0.3"
+  }
+}

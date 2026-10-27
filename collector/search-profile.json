@@ -1,0 +1,17 @@
+{
+  "timezone": "Europe/Tallinn",
+  "location": "Tallinn, Estonia",
+  "distance": 10,
+  "datePosted": "past-week",
+  "limitPerQuery": 15,
+  "maxDetails": 40,
+  "delayMs": 750,
+  "acceptedLanguages": ["English", "Estonian", "Russian"],
+  "queries": [
+    { "keywords": "Software Engineer" },
+    { "keywords": "Software Developer" },
+    { "keywords": "Java OR \"C#\" OR \".NET\" OR TypeScript OR JavaScript OR Python OR React" },
+    { "keywords": "\"QA Engineer\" OR \"Test Automation\" OR \"DevOps Engineer\" OR \"Data Engineer\"" },
+    { "keywords": "\"Software Engineer\" OR \"Software Developer\"", "location": "Estonia", "workplaceType": ["remote"] }
+  ]
+}
